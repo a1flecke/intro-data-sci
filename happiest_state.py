@@ -16,15 +16,13 @@ def main():
           "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
           "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
 
-  sentiments = loadSentiment(sent_file)
-  tweets = loadTweets(tweet_file)
-
   for tweet in tweets:
      addToStateSent(state_sents, tweet, calculateSentiment(tweet, sentiments))
 
+
   state_objs = buildStateObjs(state_sents)
-  happiest = state_objs.sorted(key=StateObj.getSent).pop()
-  print happiest.getName(), happiest.getSent()
+  happiest = sorted(state_objs, key=StateObj.getSent).pop()
+  print happiest.getName()
 
 def loadSentiment(fp):
   sent = {}
@@ -41,7 +39,6 @@ def loadTweets(fp):
     tweet = json.loads(line)
     if u'text' in tweet:
       state = getStateForTweet(tweet)
-
       if state != "":
         tweets.append(Tweet(tweet[u'text'], state))
 
@@ -57,18 +54,17 @@ def calculateSentiment(tweet, sentiments):
 
 def getStateForTweet(tweet):
   if u'user' in tweet:
-    print tweet[u'user']
-    user = json.loads(tweet[u'user'])
+    user = tweet[u'user']
     if u'lang' in user and user[u'lang'] == 'en':
       if u'location' in user:
         location = user[u'location']
-        match = re.match(',\s+(AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)')
-        if match:
-            return match.group(1)
+        search = re.search(',\s+(AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)$', location)
+        if search:
+          return search.group(1)
   return ''
 
 def addToStateSent(state_sents, tweet, sentiment):
-  state_sents = state_sents.get(tweet.getState(), 0) + 1
+  state_sents[tweet.getState()] = state_sents.get(tweet.getState(), 0) + 1
 
 def buildStateObjs(state_sents):
   state_objs = []
@@ -82,10 +78,10 @@ class Tweet:
     self.text = text
     self.state = state
 
-  def getText():
+  def getText(self):
     return self.text
 
-  def getState():
+  def getState(self):
     return self.state
 
 class StateObj:
@@ -94,10 +90,10 @@ class StateObj:
     self.name = name
     self.sent = sent
 
-  def getName():
+  def getName(self):
     return self.name
 
-  def getSent():
+  def getSent(self):
     return self.sent
 
 if __name__ == '__main__':

@@ -1,1 +1,5 @@
-sqlite3 -csv reuters.db 'select a.docid, b.docid, sum(a.count * b.count) from frequency as a join frequency as b on a.term = b.term where a.docid < b.docid group by a.docid, b.docid;' > results.txt
+select docid, docCount 
+from (
+	select docid, sum(count) as 'docCount' 	from frequency 	where term in ('washington', 'taxes', 'treasury') group by docid order by sum(count) desc
+		
+) as d order by d.docCount desc;

@@ -14,21 +14,23 @@ mr = MapReduce.MapReduce()
 def mapper(record):
     # key: document identifier
     # value: document contents
-    record_type = record[0]
-    order_id = record[1]
-    mr.emit_intermediate(order_id, record)
+    mr.emit_intermediate(record[0], record)
+    mr.emit_intermediate(record[1], record)
 
 def reducer(key, list_of_values):
     # key: word
     # value: list of occurrence
-    values = [] #need to first grab order, then for each of the remaining, emit
-    for l in list_of_values:
-      if l[0] == 'order':
-        order = l
+    name = key
 
     for l in list_of_values:
-      if l[0] == 'line_item':
-        mr.emit(copy.deepcopy(order)+l)
+      inverse = (l[1], l[0])
+      if inverse not in list_of_values:
+        mr.emit((l[0],l[1]))
+
+
+
+
+
 
 
 # Do not modify below this line

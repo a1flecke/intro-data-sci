@@ -22,9 +22,13 @@ def reducer(key, list_of_values):
     # value: list of occurrence
     name = key
 
+    #print name, list_of_values
+
+    #print name, list_of_values
+
     for l in list_of_values:
-      inverse = (l[1], l[0])
-      if inverse not in list_of_values:
+      inverse = [l[1], l[0]]
+      if inverse not in list_of_values and l[0] == name:
         mr.emit((l[0],l[1]))
 
 
